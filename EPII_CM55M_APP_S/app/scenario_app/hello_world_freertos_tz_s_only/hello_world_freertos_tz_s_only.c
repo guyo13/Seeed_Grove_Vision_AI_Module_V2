@@ -33,6 +33,8 @@
 #define hello_task2_PRIORITY	(configMAX_PRIORITIES - 1)
 
 #include "xprintf.h"
+#include "hx_drv_scu.h"
+#include "hx_drv_gpio.h"
 
 /*******************************************************************************
  * Definitions
@@ -53,7 +55,8 @@ static void hello_task2(void *pvParameters);
 int app_main(void)
 {
     printf("Task creation Hello world. No MPU\r\n");
-
+    hx_drv_scu_set_SEN_D2_pinmux(SCU_SEN_D2_PINMUX_GPIO20);
+    hx_drv_gpio_set_output(GPIO20, 0);
     if ( xTaskCreate(hello_task1, "Hello_task1", 512, NULL, hello_task1_PRIORITY, NULL) != pdPASS )
     {
         printf("Hello_task1 creation failed!.\r\n");
@@ -81,7 +84,11 @@ static void hello_task1(void *pvParameters)
     for (;;)
     {
     	printf("Hello world freertos task1.\r\n");
+        hx_drv_gpio_set_out_value(GPIO20, 1);
         vTaskDelay(pdMS_TO_TICKS(300));
+        hx_drv_gpio_set_out_value(GPIO20, 0);
+        vTaskDelay(pdMS_TO_TICKS(300));
+
     }
 }
 
